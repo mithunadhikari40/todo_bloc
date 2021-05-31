@@ -8,6 +8,7 @@ class AuthApi {
     Map<String, dynamic> requestBody = {
       "email": email,
       "password": password,
+      "gender": "none"
     };
     try {
       var uri = Uri.parse("https://api.fresco-meat.com/api/albums/signup");
@@ -17,13 +18,13 @@ class AuthApi {
         headers: {"Content-Type": "application/json"},
       );
       final body = response.body;
-      print("Signup response $body");
+      print("login response $body");
       if (response.statusCode != 201) return null;
       final parsedMap = jsonDecode(body);
       final user = UserModel.fromJson(parsedMap);
       return user;
     } catch (e) {
-      print("Sigup exception $e");
+      print("login exception $e");
       return null;
     }
   }

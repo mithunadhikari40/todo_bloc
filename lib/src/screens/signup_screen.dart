@@ -17,46 +17,43 @@ class SignUpScreen extends StatelessWidget {
       TextEditingController(text: "password");
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
+    final AuthBloc authBloc = AuthBlocProvider.of(context);
     return AuthBlocProvider(
-      child: Builder(builder: (context) {
-        final AuthBloc authBloc = AuthBlocProvider.of(context);
-
-        return Scaffold(
-          appBar: buildCustomAppBar(
-            leading: IconButton(
-              icon: Icon(
-                Icons.close,
-                color: blackColor87,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
+      child: Scaffold(
+        appBar: buildCustomAppBar(
+          leading: IconButton(
+            icon: Icon(
+              Icons.close,
+              color: blackColor87,
             ),
-            context: context,
-            subTitle: "Create your \n account",
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          body: Column(
-            children: <Widget>[
-              Expanded(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    SizedBox(height: 24),
-                    InputName(),
-                    InputPhone(),
-                    InputEmail(controller: _emailController),
-                    InputPassword(controller: _passwordController),
-                    _buildSubmitButton(context, authBloc),
-                    SizedBox(height: 12),
-                    _buildTermsAndConditions(context),
-                    SizedBox(height: 12),
-                  ],
-                ),
+          context: context,
+          subTitle: "Create your \n account",
+        ),
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  SizedBox(height: 24),
+                  InputName(),
+                  InputPhone(),
+                  InputEmail(controller: _emailController),
+                  InputPassword(controller: _passwordController),
+                  _buildSubmitButton(context, authBloc),
+                  SizedBox(height: 12),
+                  _buildTermsAndConditions(context),
+                  SizedBox(height: 12),
+                ],
               ),
-              _buildSignInSection(context)
-            ],
-          ),
-        );
-      }),
+            ),
+            _buildSignInSection(context)
+          ],
+        ),
+      ),
     );
   }
 

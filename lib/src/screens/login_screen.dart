@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/src/blocs/auth_bloc.dart';
 import 'package:todo/src/blocs/auth_bloc_provider.dart';
 import 'package:todo/src/screens/signup_screen.dart';
+import 'package:todo/src/screens/todo_screen.dart';
 import 'package:todo/src/widgets/custom_app_bar.dart';
 import 'package:todo/src/widgets/input_email.dart';
 import 'package:todo/src/widgets/input_password.dart';
@@ -170,9 +171,9 @@ class LoginScreen extends StatelessWidget {
         SnackBar(content: Text("Sign up failed")),
       );
     } else {
-      // Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-      //   return SecondScreen();
-      // }));
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+        return TodoScreen();
+      }));
 
       //todo navigate to the other screen
     }

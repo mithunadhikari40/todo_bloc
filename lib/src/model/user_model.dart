@@ -12,15 +12,15 @@ class UserModel {
 
   UserModel(
       {this.isAdmin,
-        this.sId,
-        this.name,
-        this.email,
-        this.password,
-        this.phone,
-        this.city,
-        this.registrationDate,
-        this.iV,
-        this.pushToken});
+      this.sId,
+      this.name,
+      this.email,
+      this.password,
+      this.phone,
+      this.city,
+      this.registrationDate,
+      this.iV,
+      this.pushToken});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     isAdmin = json['isAdmin'];
