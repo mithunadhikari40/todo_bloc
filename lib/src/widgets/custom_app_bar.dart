@@ -9,6 +9,7 @@ AppBar buildCustomAppBar(
   return AppBar(
     leading: leading,
     titleSpacing: 0,
+    backgroundColor: whiteColor,
     title: title == null
         ? Container()
         : Text(
@@ -16,7 +17,7 @@ AppBar buildCustomAppBar(
             style: Theme.of(context)
                 .textTheme
                 .button!
-                .copyWith(color: whiteColor, fontSize: 18),
+                .copyWith(fontSize: 18, color: Colors.black),
           ),
     bottom: PreferredSize(
         child: Container(
@@ -38,7 +39,9 @@ AppBar buildCustomAppBar(
                             style: Theme.of(context)
                                 .textTheme
                                 .headline4!
-                                .copyWith(fontWeight: FontWeight.bold),
+                                .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: blackColor87),
                           ),
                         ],
                       ),

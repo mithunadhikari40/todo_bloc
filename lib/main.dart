@@ -11,7 +11,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Login Bloc",
-      theme: ThemeData.dark(),
+      theme: ThemeData.light(),
       home: Scaffold(
         body: AuthBlocProvider(
           child: LoginScreen(),

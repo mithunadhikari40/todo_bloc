@@ -27,7 +27,7 @@ class InputPhone extends StatelessWidget {
                 builder: (context, AsyncSnapshot<String> snapshot) {
                   return TextField(
                     onChanged: authBloc.changePhone,
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.phone,
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                         contentPadding:

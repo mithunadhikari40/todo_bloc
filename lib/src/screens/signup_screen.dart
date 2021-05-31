@@ -17,35 +17,46 @@ class SignUpScreen extends StatelessWidget {
       TextEditingController(text: "password");
 
   @override
-  Widget build(BuildContext context) {
-    final AuthBloc authBloc = AuthBlocProvider.of(context);
-    return Scaffold(
-      appBar: buildCustomAppBar(
-        leading: Icon(Icons.close),
-        context: context,
-        subTitle: "Create your \n account",
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                SizedBox(height: 24),
-                InputName(),
-                InputPhone(),
-                InputEmail(controller: _emailController),
-                InputPassword(controller: _passwordController),
-                _buildSubmitButton(context, authBloc),
-                SizedBox(height: 12),
-                _buildTermsAndConditions(context),
-                SizedBox(height: 12),
-              ],
+  Widget build(BuildContext ctx) {
+    return AuthBlocProvider(
+      child: Builder(builder: (context) {
+        final AuthBloc authBloc = AuthBlocProvider.of(context);
+
+        return Scaffold(
+          appBar: buildCustomAppBar(
+            leading: IconButton(
+              icon: Icon(
+                Icons.close,
+                color: blackColor87,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
             ),
+            context: context,
+            subTitle: "Create your \n account",
           ),
-          _buildSignUpSection(context)
-        ],
-      ),
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    SizedBox(height: 24),
+                    InputName(),
+                    InputPhone(),
+                    InputEmail(controller: _emailController),
+                    InputPassword(controller: _passwordController),
+                    _buildSubmitButton(context, authBloc),
+                    SizedBox(height: 12),
+                    _buildTermsAndConditions(context),
+                    SizedBox(height: 12),
+                  ],
+                ),
+              ),
+              _buildSignInSection(context)
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -135,7 +146,7 @@ class SignUpScreen extends StatelessWidget {
 
   Future _onSubmit(AuthBloc authBloc, BuildContext context) async {
     authBloc.changeLoadingStatus(true);
-    final response = await authBloc.login();
+    final response = await authBloc.register();
     authBloc.changeLoadingStatus(false);
     if (response == null) {
       //todo show a snackbar message
@@ -145,7 +156,7 @@ class SignUpScreen extends StatelessWidget {
     }
   }
 
-  Widget _buildSignUpSection(BuildContext context) {
+  Widget _buildSignInSection(BuildContext context) {
     return Column(
       children: [
         Divider(),

@@ -54,6 +54,16 @@ class AuthBloc with AuthValidator {
     return response;
   }
 
+  Future register() async {
+    final email = _emailController.value;
+    final password = _passwordController.value;
+    final name = _nameController.value;
+    final phone = _phoneController.value;
+
+    final response = await api.register(name, phone, email, password);
+    return response;
+  }
+
   void dispose() {
     _emailController.close();
     _passwordController.close();

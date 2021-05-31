@@ -27,4 +27,31 @@ class AuthApi {
       return null;
     }
   }
+
+  Future<UserModel?> register(
+      String name, String phone, String email, String password) async {
+    Map<String, dynamic> requestBody = {
+      "email": email,
+      "password": password,
+      "name": name,
+      "phone": phone,
+    };
+    try {
+      var uri = Uri.parse("https://api.fresco-meat.com/api/albums/signup");
+      final response = await post(
+        uri,
+        body: jsonEncode(requestBody),
+        headers: {"Content-Type": "application/json"},
+      );
+      final body = response.body;
+      print("Signup response $body");
+      if (response.statusCode != 201) return null;
+      final parsedMap = jsonDecode(body);
+      final user = UserModel.fromJson(parsedMap);
+      return user;
+    } catch (e) {
+      print("Sigup exception $e");
+      return null;
+    }
+  }
 }
