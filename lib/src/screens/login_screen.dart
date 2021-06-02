@@ -10,10 +10,8 @@ import 'package:todo/src/widgets/input_password.dart';
 import 'package:todo/src/widgets/shared/app_colors.dart';
 
 class LoginScreen extends StatelessWidget {
-  final TextEditingController _emailController =
-      TextEditingController(text: "gmail@email.com");
-  final TextEditingController _passwordController =
-      TextEditingController(text: "password");
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -162,13 +160,16 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future _onSubmit(AuthBloc authBloc, BuildContext context) async {
+    // print("Email ${_emailController.text}");
+    // _emailController.text = "you@gmail.com";
+    // return;
     authBloc.changeLoadingStatus(true);
     final response = await authBloc.login();
     authBloc.changeLoadingStatus(false);
     if (response == null) {
       //todo show a snackbar message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sign up failed")),
+        SnackBar(content: Text("Login failed")),
       );
     } else {
       Navigator.of(context).push(MaterialPageRoute(builder: (_) {

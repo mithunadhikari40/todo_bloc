@@ -7,7 +7,7 @@ class TodoModel {
 
   TodoModel.fromJson(Map<String, dynamic> map) {
     name = map["name"];
-    desc = map["desc"];
+    desc = map["description"];
     date = DateTime.parse(map["date"]);
   }
 

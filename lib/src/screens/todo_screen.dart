@@ -9,45 +9,62 @@ import 'package:todo/src/widgets/shared/app_colors.dart';
 class TodoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final TodoBloc bloc = TodoBlocProvider.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Your todos", style: TextStyle(color: blackColor87)),
-        backgroundColor: whiteColor,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.add,
-              size: 40,
-              color: blackColor87,
-            ),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                return CreateOrUpdateTodo(
-                  bloc: bloc,
-                );
-              }));
-            },
+    return TodoBlocProvider(
+      child: Builder(builder: (context) {
+        final TodoBloc bloc = TodoBlocProvider.of(context);
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Your todos", style: TextStyle(color: blackColor87)),
+            backgroundColor: whiteColor,
+            actions: [
+              IconButton(
+                icon: Icon(
+                  Icons.add,
+                  size: 40,
+                  color: blackColor87,
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                    return CreateOrUpdateTodo(
+                      bloc: bloc,
+                    );
+                  }));
+                },
+              ),
+              SizedBox(
+                width: 16,
+              )
+            ],
           ),
-          SizedBox(
-            width: 16,
-          )
-        ],
-      ),
-      body: _buildBody(bloc),
+          body: _buildBody(bloc),
+        );
+      }),
     );
   }
 
   Widget _buildBody(TodoBloc bloc) {
-    return StreamBuilder(
-        stream: bloc.todoListStream,
-        builder: (context, AsyncSnapshot<List<TodoModel>> snapshot) {
-          print(
-              "snapshot data is ${snapshot.data} and has data ${snapshot.hasData}");
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return _buildGetStarted(context, bloc);
+    return FutureBuilder(
+        future: bloc.fetchAllTodos(),
+        builder: (context, futureSnapshot) {
+          if (futureSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
-          return _buildTodoList(context, bloc, snapshot.data!);
+          return Container(
+            child: StreamBuilder(
+              stream: bloc.todoListStream,
+              builder: (context, AsyncSnapshot<List<TodoModel>> snapshot) {
+                print(
+                    "snapshot data is ${snapshot.data} and has data ${snapshot.hasData}");
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return _buildGetStarted(context, bloc);
+                }
+                return _buildTodoList(context, bloc, snapshot.data!);
+              },
+            ),
+          );
         });
   }
 

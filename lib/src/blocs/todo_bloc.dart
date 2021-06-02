@@ -114,4 +114,13 @@ class TodoBloc with TodoValidator {
     _todoListController.close();
     _editingTodoController.close();
   }
+
+  Future<void> fetchAllTodos() async {
+    final list = await api.getAllTodos();
+    if (list != null) {
+      _todoListController.sink.add(list);
+    } else {
+      _todoListController.sink.add([]);
+    }
+  }
 }

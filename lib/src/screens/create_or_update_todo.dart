@@ -163,7 +163,6 @@ class CreateOrUpdateTodo extends StatelessWidget {
   Future _onSubmit(TodoBloc bloc, BuildContext context, bool isCreating) async {
     bloc.changeLoadingStatus(true);
 
-    final response = await bloc.save();
     if (isCreating) {
       bloc.addNewTodo();
     } else {
