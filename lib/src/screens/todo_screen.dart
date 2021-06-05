@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo/src/blocs/todo_bloc.dart';
 import 'package:todo/src/blocs/todo_bloc_provider.dart';
 import 'package:todo/src/model/todo_model.dart';
@@ -116,20 +117,47 @@ class TodoScreen extends StatelessWidget {
       itemCount: list.length,
       itemBuilder: (context, int index) {
         final single = list[index];
-        return Card(
-          child: ListTile(
-            title: Text(single.name!),
-            subtitle: Text(single.desc!),
-            trailing: Text(single.date!.toIso8601String().substring(0, 10)),
-            onTap: () {
-              bloc.setEditingTodo(single);
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                return CreateOrUpdateTodo(bloc: bloc);
-              }));
-            },
-          ),
-        );
+        return _buildSingleTodoItem(single, bloc, context);
       },
+    );
+  }
+
+  Widget _buildSingleTodoItem(
+      TodoModel single, TodoBloc bloc, BuildContext context) {
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      actionExtentRatio: 0.25,
+      actions: <Widget>[
+        IconSlideAction(
+          caption: 'Update',
+          color: Colors.green,
+          icon: Icons.edit,
+          onTap: () {
+            bloc.setEditingTodo(single);
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+              return CreateOrUpdateTodo(bloc: bloc);
+            }));
+          },
+        ),
+      ],
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: 'Delete',
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: () {
+            bloc.deleteTodo(single);
+          },
+        ),
+      ],
+      child: Card(
+        child: ListTile(
+          title: Text(single.name!),
+          subtitle: Text(single.desc!),
+          trailing: Text(single.date!.toIso8601String().substring(0, 10)),
+          onTap: () {},
+        ),
+      ),
     );
   }
 }

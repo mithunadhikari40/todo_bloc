@@ -48,6 +48,7 @@ class TodoBloc with TodoValidator {
     print("Index is this one current empty ${_existing.isEmpty}");
 
     _todoListController.sink.add(_existing);
+    api.createTodo(currentTodo);
   }
 
   void updateTodo() {
@@ -55,8 +56,13 @@ class TodoBloc with TodoValidator {
         _todoListController.hasValue ? _todoListController.value : [];
     int index = _existing.indexOf(editingTodo!);
     _existing.removeAt(index);
+    print("Existing todo ${editingTodo!.id}");
+
+    final updatingTodo = currentTodo;
+    updatingTodo.id = editingTodo!.id;
     _existing.insert(index, currentTodo);
     _todoListController.sink.add(_existing);
+    api.updateTodo(updatingTodo);
   }
 
   void deleteTodo(TodoModel todo) {
@@ -67,6 +73,7 @@ class TodoBloc with TodoValidator {
     _existing.removeAt(index);
 
     _todoListController.sink.add(_existing);
+    api.deleteTodo(todo.id!);
   }
 
   //stream getters

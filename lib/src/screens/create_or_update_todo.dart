@@ -168,12 +168,13 @@ class CreateOrUpdateTodo extends StatelessWidget {
     } else {
       bloc.updateTodo();
     }
+    var response = await bloc.save();
 
     bloc.changeLoadingStatus(false);
     if (response == null) {
       //todo show a snackbar message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Faield to save the todo, please try again")),
+        SnackBar(content: Text("Failed to save the todo, please try again")),
       );
     } else {
       bloc.setEditingTodo(null);
