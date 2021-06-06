@@ -29,22 +29,22 @@ class TodoApi {
     }
   }
 
-  Future<bool> createTodo(TodoModel todo) async {
+  Future<String?> createTodo(TodoModel todo) async {
     try {
       final uri = Uri.parse(root);
       final response = await post(uri, body: jsonEncode(todo.toJson()));
       if (response.statusCode != 200) {
-        return false;
+        return null;
       }
       var body = jsonDecode(response.body);
       print("Body $body");
       if (body["name"] == null) {
-        return false;
+        return null;
       }
-      return true;
+      return body["name"];
     } catch (e) {
       print("Creating todo error $e");
-      return false;
+      return null;
     }
   }
 

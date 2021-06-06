@@ -164,24 +164,27 @@ class CreateOrUpdateTodo extends StatelessWidget {
     bloc.changeLoadingStatus(true);
 
     if (isCreating) {
-      bloc.addNewTodo();
+      await bloc.addNewTodo();
     } else {
       bloc.updateTodo();
     }
-    var response = await bloc.save();
-
+    bloc.setEditingTodo(null);
     bloc.changeLoadingStatus(false);
-    if (response == null) {
-      //todo show a snackbar message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to save the todo, please try again")),
-      );
-    } else {
-      bloc.setEditingTodo(null);
-      Navigator.of(context).pop();
+    Navigator.of(context).pop();
 
-      //todo navigate to the other screen
-    }
+    // var response = await bloc.save();
+
+    // if (response == null) {
+    //   //todo show a snackbar message
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text("Failed to save the todo, please try again")),
+    //   );
+    // } else {
+    //   bloc.setEditingTodo(null);
+    //   Navigator.of(context).pop();
+
+    //   //todo navigate to the other screen
+    // }
   }
 
   AppBar _buildAppBar(bool isCreating, BuildContext context) {
