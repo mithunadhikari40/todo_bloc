@@ -160,23 +160,25 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future _onSubmit(AuthBloc authBloc, BuildContext context) async {
-    // print("Email ${_emailController.text}");
-    // _emailController.text = "you@gmail.com";
-    // return;
     authBloc.changeLoadingStatus(true);
-    final response = await authBloc.login();
-    authBloc.changeLoadingStatus(false);
-    if (response == null) {
-      //todo show a snackbar message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login failed")),
-      );
-    } else {
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-        return TodoScreen();
-      }));
 
-      //todo navigate to the other screen
+    try {
+      final response = await authBloc.login();
+      authBloc.changeLoadingStatus(false);
+      if (response == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Login failed")),
+        );
+      } else {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+          return TodoScreen();
+        }));
+      }
+    } catch (e) {
+      authBloc.changeLoadingStatus(false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("$e")),
+      );
     }
   }
 

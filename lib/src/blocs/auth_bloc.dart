@@ -50,7 +50,7 @@ class AuthBloc with AuthValidator {
   Future login() async {
     final email = _emailController.value;
     final password = _passwordController.value;
-    final response = await api.login(email, password);
+    final response = await api.loginWithFirebase(email, password);
     return response;
   }
 
@@ -60,7 +60,8 @@ class AuthBloc with AuthValidator {
     final name = _nameController.value;
     final phone = _phoneController.value;
 
-    final response = await api.register(name, phone, email, password);
+    final response =
+        await api.registerWithFirebase(name, phone, email, password);
     return response;
   }
 
