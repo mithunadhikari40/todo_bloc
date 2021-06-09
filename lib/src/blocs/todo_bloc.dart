@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart' show BehaviorSubject, Rx;
 import 'package:todo/src/api/todo_api.dart';
+import 'package:todo/src/blocs/cache_bloc.dart';
 import 'package:todo/src/model/todo_model.dart';
 import 'package:todo/src/validators/todo_validator.dart';
 
@@ -43,7 +44,8 @@ class TodoBloc with TodoValidator {
     }
     print("Index is this one current one ${_existing.map((e) => e.toJson())}");
 
-    final newId = await api.createTodo(currentTodo);
+    final uid = cache.currentUid!;
+    final newId = await api.createTodo(currentTodo, uid);
     final newTodo = currentTodo;
     newTodo.id = newId;
     _existing.add(newTodo);
@@ -64,7 +66,8 @@ class TodoBloc with TodoValidator {
     updatingTodo.id = editingTodo!.id;
     _existing.insert(index, updatingTodo);
     _todoListController.sink.add(_existing);
-    api.updateTodo(updatingTodo);
+    final uid = cache.currentUid!;
+    api.updateTodo(updatingTodo, uid);
   }
 
   void deleteTodo(TodoModel todo) {
@@ -75,7 +78,8 @@ class TodoBloc with TodoValidator {
     _existing.removeAt(index);
 
     _todoListController.sink.add(_existing);
-    api.deleteTodo(todo.id!);
+    final uid = cache.currentUid!;
+    api.deleteTodo(todo.id!, uid);
   }
 
   //stream getters
@@ -125,7 +129,8 @@ class TodoBloc with TodoValidator {
   }
 
   Future<void> fetchAllTodos() async {
-    final list = await api.getAllTodos();
+    String uid = cache.currentUid!;
+    final list = await api.getAllTodos(uid);
     if (list != null) {
       _todoListController.sink.add(list);
     } else {

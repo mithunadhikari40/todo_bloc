@@ -4,11 +4,11 @@ import 'package:http/http.dart';
 import 'package:todo/src/model/todo_model.dart';
 
 class TodoApi {
-  var root = "https://todo-e3cde-default-rtdb.firebaseio.com/todo.json";
+  var root = "https://todo-e3cde-default-rtdb.firebaseio.com/todo";
 
-  Future<List<TodoModel>?> getAllTodos() async {
+  Future<List<TodoModel>?> getAllTodos(String uid) async {
     try {
-      final uri = Uri.parse(root);
+      final uri = Uri.parse("$root/$uid.json");
       final response = await get(uri);
       if (response.statusCode != 200) {
         return null;
@@ -29,9 +29,9 @@ class TodoApi {
     }
   }
 
-  Future<String?> createTodo(TodoModel todo) async {
+  Future<String?> createTodo(TodoModel todo, String uid) async {
     try {
-      final uri = Uri.parse(root);
+      final uri = Uri.parse("$root/$uid.json");
       final response = await post(uri, body: jsonEncode(todo.toJson()));
       if (response.statusCode != 200) {
         return null;
@@ -48,8 +48,8 @@ class TodoApi {
     }
   }
 
-  Future<bool> updateTodo(TodoModel todo) async {
-    var url = "https://todo-e3cde-default-rtdb.firebaseio.com/todo";
+  Future<bool> updateTodo(TodoModel todo, String uid) async {
+    var url = "https://todo-e3cde-default-rtdb.firebaseio.com/todo/$uid";
     try {
       final uri = Uri.parse("$url/${todo.id}.json");
       print("Uri is $uri");
@@ -69,8 +69,8 @@ class TodoApi {
     }
   }
 
-  Future<bool> deleteTodo(String id) async {
-    var url = "https://todo-e3cde-default-rtdb.firebaseio.com/todo";
+  Future<bool> deleteTodo(String id, String uid) async {
+    var url = "https://todo-e3cde-default-rtdb.firebaseio.com/todo/$uid";
     try {
       final uri = Uri.parse("$url/$id.json");
       print("Uri is $uri");
