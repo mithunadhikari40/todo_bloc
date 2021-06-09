@@ -30,14 +30,14 @@ class AuthApi {
     }
   }
 
-  Future<bool?> loginWithFirebase(String email, String password) async {
+  Future<String?> loginWithFirebase(String email, String password) async {
     try {
       UserCredential credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       final user = credential.user;
-      if (user == null) return false;
+      if (user == null) return null;
       final uid = user.uid;
-      return true;
+      return uid;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -76,22 +76,18 @@ class AuthApi {
     }
   }
 
-  Future<bool?> registerWithFirebase(
+  Future<String?> registerWithFirebase(
       String name, String phone, String email, String password) async {
-    Map<String, dynamic> requestBody = {
-      "email": email,
-      "password": password,
-      "name": name,
-      "phone": phone,
-    };
-
     try {
       UserCredential credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+
       final user = credential.user;
-      if (user == null) return false;
+      if (user == null) return null;
       final uid = user.uid;
-      return true;
+
+      await storeUserInfo(uid, name, phone, email);
+      return uid;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -102,7 +98,33 @@ class AuthApi {
       }
     } catch (e) {
       print(e);
-      return false;
+      return null;
+    }
+  }
+
+  Future<String?> storeUserInfo(
+      String uid, String name, String phone, String email) async {
+    var root = "https://todo-e3cde-default-rtdb.firebaseio.com/users/$uid.json";
+    Map<String, dynamic> requestBody = {
+      "email": email,
+      "name": name,
+      "phone": phone,
+    };
+    try {
+      final uri = Uri.parse(root);
+      final response = await put(uri, body: jsonEncode(requestBody));
+      if (response.statusCode != 200) {
+        return null;
+      }
+      var body = jsonDecode(response.body);
+      print("Store user info $body");
+      if (body["name"] == null) {
+        return null;
+      }
+      return body["name"];
+    } catch (e) {
+      print("storing user info error $e");
+      return null;
     }
   }
 }

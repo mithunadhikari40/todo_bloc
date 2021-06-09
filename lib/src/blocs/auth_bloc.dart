@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart' show BehaviorSubject, Rx;
 import 'package:todo/src/api/auth_api.dart';
+import 'package:todo/src/blocs/cache_bloc.dart';
 import 'package:todo/src/validators/auth_validator.dart';
 
 class AuthBloc with AuthValidator {
@@ -51,6 +52,9 @@ class AuthBloc with AuthValidator {
     final email = _emailController.value;
     final password = _passwordController.value;
     final response = await api.loginWithFirebase(email, password);
+    if (response != null) {
+      cache.loadData(response);
+    }
     return response;
   }
 
@@ -62,6 +66,9 @@ class AuthBloc with AuthValidator {
 
     final response =
         await api.registerWithFirebase(name, phone, email, password);
+    if (response != null) {
+      cache.loadData(response);
+    }
     return response;
   }
 
