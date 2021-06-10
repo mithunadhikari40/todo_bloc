@@ -11,7 +11,7 @@ void main() async {
   await cache.setup();
   bool isLoggedIn = cache.currentUid != null;
 
-  runApp(App(isLoggedIn));
+  runApp(App(false));
 }
 
 class App extends StatelessWidget {

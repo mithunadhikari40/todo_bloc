@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject, Rx;
 import 'package:todo/src/api/todo_api.dart';
 import 'package:todo/src/blocs/cache_bloc.dart';
@@ -8,9 +9,12 @@ import 'package:todo/src/validators/todo_validator.dart';
 
 class TodoBloc with TodoValidator {
   final api = TodoApi();
+  final uid = cache.currentUid;
 
-  // holds the list of all the todos
-  final _todoListController = BehaviorSubject<List<TodoModel>>();
+  final _instance = FirebaseFirestore.instance.collection('todo');
+
+  //todo holds all the data of todo lists
+  final BehaviorSubject<List<TodoModel>> _listController = BehaviorSubject();
 
   //to hold the status of the button's child
   final _loadingController = BehaviorSubject<bool>();
@@ -33,53 +37,19 @@ class TodoBloc with TodoValidator {
       _editingTodoController.sink.add;
 
   Future<void> addNewTodo() async {
-    List<TodoModel> _existing =
-        _todoListController.hasValue ? _todoListController.value : [];
-    int existingTodoIndex = _existing
-        .indexWhere((element) => element.name == _nameController.value);
-
-    if (existingTodoIndex >= 0) {
-      _nameController.addError("This name already exists");
-      return;
-    }
-    print("Index is this one current one ${_existing.map((e) => e.toJson())}");
-
-    final uid = cache.currentUid!;
-    final newId = await api.createTodo(currentTodo, uid);
-    final newTodo = currentTodo;
-    newTodo.id = newId;
-    _existing.add(newTodo);
-    print("Index is this one current two ${_existing.map((e) => e.toJson())}");
-    print("Index is this one current empty ${_existing.isEmpty}");
-
-    _todoListController.sink.add(_existing);
+    _instance.doc(uid).collection(uid!).add(currentTodo.toJson());
   }
 
   void updateTodo() {
-    List<TodoModel> _existing =
-        _todoListController.hasValue ? _todoListController.value : [];
-    int index = _existing.indexOf(editingTodo!);
-    _existing.removeAt(index);
-    print("Existing todo ${editingTodo!.id}");
-
-    final updatingTodo = currentTodo;
-    updatingTodo.id = editingTodo!.id;
-    _existing.insert(index, updatingTodo);
-    _todoListController.sink.add(_existing);
-    final uid = cache.currentUid!;
-    api.updateTodo(updatingTodo, uid);
+    _instance
+        .doc(uid)
+        .collection(uid!)
+        .doc(editingTodo!.id)
+        .set(currentTodo.toJson());
   }
 
   void deleteTodo(TodoModel todo) {
-    List<TodoModel> _existing =
-        _todoListController.hasValue ? _todoListController.value : [];
-    int index = _todoListController.value
-        .indexWhere((element) => element.name == todo.name);
-    _existing.removeAt(index);
-
-    _todoListController.sink.add(_existing);
-    final uid = cache.currentUid!;
-    api.deleteTodo(todo.id!, uid);
+    _instance.doc(uid).collection(uid!).doc(todo.id!).delete();
   }
 
   //stream getters
@@ -98,21 +68,9 @@ class TodoBloc with TodoValidator {
   Stream<bool> get buttonStream => Rx.combineLatest3(
       nameStream, descriptionStream, dateStream, (a, b, c) => true);
 
-  Stream<List<TodoModel>> get todoListStream => _todoListController.stream;
-
   //get the current active todo
   TodoModel? get editingTodo =>
       _editingTodoController.hasValue ? _editingTodoController.value : null;
-
-  Future save() async {
-    final String name = _nameController.value;
-    final String description = _descriptionController.value;
-    final DateTime date = _dateController.value;
-    await Future.delayed(Duration(seconds: 2));
-    print("name $name and description $description and date $date");
-
-    return true;
-  }
 
   TodoModel get currentTodo => TodoModel(
       date: _dateController.value,
@@ -124,17 +82,23 @@ class TodoBloc with TodoValidator {
     _nameController.close();
     _descriptionController.close();
     _dateController.close();
-    _todoListController.close();
     _editingTodoController.close();
+    _listController.close();
   }
 
-  Future<void> fetchAllTodos() async {
-    String uid = cache.currentUid!;
-    final list = await api.getAllTodos(uid);
-    if (list != null) {
-      _todoListController.sink.add(list);
-    } else {
-      _todoListController.sink.add([]);
-    }
+  Stream<QuerySnapshot<Object?>> getAllTodos() {
+    Stream<QuerySnapshot> snapshot =
+        _instance.doc(uid).collection(uid!).snapshots();
+    snapshot.isEmpty.then((value) {
+      print("The snapshot is now empty here $value");
+    });
+    return snapshot;
+    // return snapshot.map((event) {
+    //   print("Is this list empty or not ${event.docs.isEmpty}");
+    //   if (event.docs.isEmpty) return [];
+    //   return event.docs.map((QueryDocumentSnapshot e) {
+    //     return TodoModel.fromJson(e.data() as Map<String, dynamic>, e.id);
+    //   }).toList();
+    // });
   }
 }
