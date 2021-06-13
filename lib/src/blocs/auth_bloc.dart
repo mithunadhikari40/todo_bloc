@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject, Rx;
 import 'package:todo/src/api/auth_api.dart';
 import 'package:todo/src/blocs/cache_bloc.dart';
@@ -68,7 +69,12 @@ class AuthBloc with AuthValidator {
         await api.registerWithFirebase(name, phone, email, password);
     if (response != null) {
       cache.loadData(response);
+      final _instance = FirebaseFirestore.instance.collection('users');
+      _instance
+          .doc(response)
+          .set({"email": email, "name": name, "phone": phone});
     }
+
     return response;
   }
 

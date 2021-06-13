@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -45,27 +46,25 @@ class TodoScreen extends StatelessWidget {
   }
 
   Widget _buildBody(TodoBloc bloc) {
-    return FutureBuilder(
-        future: bloc.fetchAllTodos(),
-        builder: (context, futureSnapshot) {
-          if (futureSnapshot.connectionState == ConnectionState.waiting) {
+    return StreamBuilder(
+        stream: bloc.fetchAllTodos(),
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
-          return Container(
-            child: StreamBuilder(
-              stream: bloc.todoListStream,
-              builder: (context, AsyncSnapshot<List<TodoModel>> snapshot) {
-                print(
-                    "snapshot data is ${snapshot.data} and has data ${snapshot.hasData}");
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return _buildGetStarted(context, bloc);
-                }
-                return _buildTodoList(context, bloc, snapshot.data!);
-              },
-            ),
-          );
+          if (!snapshot.hasData) {
+            return _buildGetStarted(context, bloc);
+          }
+          if (snapshot.data!.docs.isEmpty) {
+            return _buildGetStarted(context, bloc);
+          }
+          final list = snapshot.data!.docs.map((e) {
+            return TodoModel.fromJson(e.data(), e.id);
+          }).toList();
+          return _buildTodoList(context, bloc, list);
         });
   }
 

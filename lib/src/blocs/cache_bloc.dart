@@ -27,7 +27,8 @@ class _CacheBloc {
 
     final value = _preferences!.getString(UID_KEY);
     if (value != null) {
-      loadData(value);
+      // loadData(value);
+      _uidController.sink.add(value);
     }
   }
 

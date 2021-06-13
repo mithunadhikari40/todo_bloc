@@ -86,7 +86,7 @@ class AuthApi {
       if (user == null) return null;
       final uid = user.uid;
 
-      await storeUserInfo(uid, name, phone, email);
+      // await storeUserInfo(uid, name, phone, email);
       return uid;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
